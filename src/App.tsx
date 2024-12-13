@@ -7,12 +7,13 @@ const App: React.FC = () => {
     useEffect(() => {
         const message = input.split('').map((char) => parseInt(char))
 
-        const r = 3; // Параметр r
+        const r = 2; // Параметр r
         const m = 4; // Параметр m
         const generatorMatrix = generateReedMullerMatrix(r, m);
         console.log("Матрица генерации:", generatorMatrix);
         const encodedMessage = encodeReedMuller(message, generatorMatrix);
         console.log("Закодированное сообщение:", encodedMessage);
+        console.log(decodeReedMuller(encodedMessage, generatorMatrix))
 
     }, [input]);
 
@@ -84,4 +85,19 @@ function encodeReedMuller(message: number[], generatorMatrix: number[][]): numbe
     }
 
     return encodedMessage;
+}
+
+function decodeReedMuller(receivedMessage: number[], generatorMatrix: number[][]): number[] {
+    const messageLength = generatorMatrix.length;
+    const decodedMessage: number[] = new Array(messageLength).fill(0);
+
+    for (let i = 0; i < messageLength; i++) {
+        let sum = 0;
+        for (let j = 0; j < receivedMessage.length; j++) {
+            sum ^= (receivedMessage[j] & generatorMatrix[i][j]);
+        }
+        decodedMessage[i] = sum;
+    }
+
+    return decodedMessage;
 }
